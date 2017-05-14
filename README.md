@@ -4,7 +4,7 @@
 
 This module send message with list of the anniversaries that occur today.
 
-Tested with 1.7.9 version and Webtrees.
+Tested with 1.7.9 version.
 
 ## Installation
 1. Download the [latest release](https://github.com/UksusoFF/webtrees-todays_events_message/releases/latest).
