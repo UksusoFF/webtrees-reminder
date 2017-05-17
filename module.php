@@ -67,58 +67,58 @@ class TodayEventsMessage extends AbstractModule implements ModuleConfigInterface
             foreach (User::all() as $user) {
                 Auth::login($user);
                 foreach (Tree::getAll() as $tree) {
-                if (!Auth::isMember($tree, $user)) {
-                    continue;
-                }
-                $events = [];
-                foreach (FunctionsDb::getAnniversaryEvents(WT_CLIENT_JD, 'BIRT MARR', $tree) as $fact) {
-                    $record = $fact->getParent();
-                    if ($record instanceof Individual && $record->isDead()) {
+                    if (!Auth::isMember($tree, $user)) {
                         continue;
                     }
-                    if ($record instanceof Family) {
-                        $husb = $record->getHusband();
-                        if (is_null($husb) || $husb->isDead()) {
-                            continue;
-                        }
-                        $wife = $record->getWife();
-                        if (is_null($wife) || $wife->isDead()) {
-                            continue;
-                        }
-                    }
-                    $events[] = $fact;
-                }
-
-                if (!empty($events)) {
-                    $html = '';
-                    $html .= '<table>';
-                    $html .= '<thead><tr>';
-                    $html .= '<th>' . I18N::translate('Record') . '</th>';
-                    $html .= '<th>' . GedcomTag::getLabel('DATE') . '</th>';
-                    $html .= '<th>' . I18N::translate('Anniversary') . '</th>';
-                    $html .= '<th>' . GedcomTag::getLabel('EVEN') . '</th>';
-                    $html .= '</tr></thead><tbody>';
-
-                    foreach ($events as $n => $fact) {
+                    $events = [];
+                    foreach (FunctionsDb::getAnniversaryEvents(WT_CLIENT_JD, 'BIRT MARR', $tree) as $fact) {
                         $record = $fact->getParent();
-                        $html .= '<tr>';
-                        $html .= '<td><a href="' . $record->getAbsoluteLinkUrl() . '">' . $record->getFullName() . '</a></td>';
-                        $html .= '<td>' . $fact->getDate()->display() . '</td>';
-                        $html .= '<td>';
-                        $html .= ($fact->anniv ? I18N::number($fact->anniv) : '');
-                        $html .= '</td>';
-                        $html .= '<td>' . $fact->getLabel() . '</td>';
-                        $html .= '</tr>';
+                        if ($record instanceof Individual && $record->isDead()) {
+                            continue;
+                        }
+                        if ($record instanceof Family) {
+                            $husb = $record->getHusband();
+                            if (is_null($husb) || $husb->isDead()) {
+                                continue;
+                            }
+                            $wife = $record->getWife();
+                            if (is_null($wife) || $wife->isDead()) {
+                                continue;
+                            }
+                        }
+                        $events[] = $fact;
                     }
 
-                    $html .= '</tbody></table>';
+                    if (!empty($events)) {
+                        $html = '';
+                        $html .= '<table>';
+                        $html .= '<thead><tr>';
+                        $html .= '<th>' . I18N::translate('Record') . '</th>';
+                        $html .= '<th>' . GedcomTag::getLabel('DATE') . '</th>';
+                        $html .= '<th>' . I18N::translate('Anniversary') . '</th>';
+                        $html .= '<th>' . GedcomTag::getLabel('EVEN') . '</th>';
+                        $html .= '</tr></thead><tbody>';
 
-                    if ($user->getPreference('contactmethod') !== 'none') {
-                        I18N::init($user->getPreference('language'));
-                        Mail::systemMessage($tree, $user, I18N::translate('On this day'), $html);
-                        I18N::init(WT_LOCALE);
+                        foreach ($events as $n => $fact) {
+                            $record = $fact->getParent();
+                            $html .= '<tr>';
+                            $html .= '<td><a href="' . $record->getAbsoluteLinkUrl() . '">' . $record->getFullName() . '</a></td>';
+                            $html .= '<td>' . $fact->getDate()->display() . '</td>';
+                            $html .= '<td>';
+                            $html .= ($fact->anniv ? I18N::number($fact->anniv) : '');
+                            $html .= '</td>';
+                            $html .= '<td>' . $fact->getLabel() . '</td>';
+                            $html .= '</tr>';
+                        }
+
+                        $html .= '</tbody></table>';
+
+                        if ($user->getPreference('contactmethod') !== 'none') {
+                            I18N::init($user->getPreference('language'));
+                            Mail::systemMessage($tree, $user, I18N::translate('On this day'), $html);
+                            I18N::init(WT_LOCALE);
+                        }
                     }
-                }
                 }
                 Auth::logout();
             }
