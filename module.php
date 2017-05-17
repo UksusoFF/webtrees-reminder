@@ -64,10 +64,14 @@ class TodayEventsMessage extends AbstractModule implements ModuleConfigInterface
         if (WT_TIMESTAMP - $this->getSetting('TEM_LAST_EMAIL') > (60 * 60 * 24)) {
             $this->setSetting('TEM_LAST_EMAIL', WT_TIMESTAMP);
 
-            foreach (Tree::getAll() as $tree) {
+            foreach (User::all() as $user) {
+                Auth::login($user);
+                foreach (Tree::getAll() as $tree) {
+                if (!Auth::isMember($tree, $user)) {
+                    continue;
+                }
                 $events = [];
-
-                foreach (FunctionsDb::getEventsList(WT_CLIENT_JD, WT_CLIENT_JD, 'BIRT MARR', $tree) as $fact) {
+                foreach (FunctionsDb::getAnniversaryEvents(WT_CLIENT_JD, 'BIRT MARR', $tree) as $fact) {
                     $record = $fact->getParent();
                     if ($record instanceof Individual && $record->isDead()) {
                         continue;
@@ -109,18 +113,14 @@ class TodayEventsMessage extends AbstractModule implements ModuleConfigInterface
 
                     $html .= '</tbody></table>';
 
-                    foreach (User::all() as $user) {
-                        if (
-                            $user->getPreference('contactmethod') !== 'none' &&
-                            $user->getEmail() == 'uksusoff@yandex.ru' &&
-                            Auth::isMember($tree, $user)
-                        ) {
-                            I18N::init($user->getPreference('language'));
-                            Mail::systemMessage($tree, $user, I18N::translate('On this day'), $html);
-                            I18N::init(WT_LOCALE);
-                        }
+                    if ($user->getPreference('contactmethod') !== 'none') {
+                        I18N::init($user->getPreference('language'));
+                        Mail::systemMessage($tree, $user, I18N::translate('On this day'), $html);
+                        I18N::init(WT_LOCALE);
                     }
                 }
+                }
+                Auth::logout();
             }
         }
     }
