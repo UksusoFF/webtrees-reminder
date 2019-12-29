@@ -1,0 +1,66 @@
+<?php
+
+use Fisharebest\Webtrees\View;
+
+?>
+
+<?= view('components/breadcrumbs', ['links' => $breadcrumbs]) ?>
+
+<div id="reminder-admin-config">
+
+    <h1><?= $title ?></h1>
+
+    <div id="reminder-admin-config-content">
+
+        <h3>
+            Cron settings
+            <span class="btn btn-primary" data-toggle="collapse" data-target="#reminder-admin-config-cron-content">
+                Done
+            </span>
+        </h3>
+
+        <div class="collapse show" id="reminder-admin-config-cron-content">
+
+            <p>Module require configured Cron entry for work.</p>
+            <p>You only need to add the following Cron entry to your server:</p>
+
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="reminder-admin-config-cron-input">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="reminder-admin-config-cron-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <h3>User settings</h3>
+
+        <table id="reminder-admin-config-table" class="table" data-url="<?= e($routes['data']) ?>">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>E-mail</th>
+                <th class="text-right">Reminders</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<?php View::push('javascript') ?>
+<script type="application/javascript">
+    window.WT_REMINDER = <?= json_encode([ 'routes' => $routes ]) ?>
+</script>
+<?php foreach ($scripts as $path) : ?>
+    <script type="text/javascript" src="<?= $path ?>"></script>
+<?php endforeach ?>
+<?php View::endpush() ?>
+
+<?php View::push('styles') ?>
+<?php foreach ($styles as $path) : ?>
+    <link rel="stylesheet" href="<?= $path ?>">
+<?php endforeach ?>
+<?php View::endpush() ?>

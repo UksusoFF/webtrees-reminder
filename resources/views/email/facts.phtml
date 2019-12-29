@@ -1,0 +1,24 @@
+<?php
+/** @var string $subject */
+/** @var \Illuminate\Support\Collection $items */
+/** @var \Fisharebest\Webtrees\Fact $fact */
+?>
+
+<h3><?= $subject ?></h3>
+
+<?php foreach ($items as $group => $facts) : ?>
+    <strong><?= $group ?></strong>
+    <br/>
+    <?php foreach ($facts as $fact) : ?>
+        <?php $record = $fact->record(); ?>
+        <?= $fact->label() ?>:
+        <a href="<?= e($record->url()) ?>"><?= $record->fullName() ?></a>
+
+        <?php $year = $fact->date()->display(false, '%Y'); ?>
+        <?php if (!empty($year)) : ?>
+            (<?= $year ?> / <?= $fact->anniv ?>)
+        <?php endif ?>
+        <br/>
+    <?php endforeach ?>
+    <hr>
+<?php endforeach ?>

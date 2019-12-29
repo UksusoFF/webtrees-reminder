@@ -1,0 +1,9 @@
+<span class="custom-control custom-switch">
+    <input type="checkbox"
+           class="custom-control-input"
+           id="reminder-email-state-<?= e($id) ?>"
+           data-action="email"
+           data-url="<?= e($url) ?>"
+           <?= $checked ? 'checked' : '' ?>>
+    <label class="custom-control-label" for="reminder-email-state-<?= e($id) ?>">E-mail</label>
+</span>
