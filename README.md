@@ -1,4 +1,4 @@
-Reminder for webtrees
+# Reminder for webtrees
 
 [![Latest Release](https://img.shields.io/github/release/UksusoFF/webtrees-reminder.svg)](https://github.com/UksusoFF/webtrees-reminder/releases/latest)
 
