@@ -53,10 +53,11 @@ class AdminController extends AbstractAdminController implements RequestHandlerI
                 $this->module->getConfigLink() => $this->module->title(),
             ],
             'routes' => [
-                'cron' => route(CronController::ROUTE_PREFIX, [
+                //Crontab can't work with percents. So we replace this.
+                'cron' => str_replace('%2F', '/', route(CronController::ROUTE_PREFIX, [
                     'action' => 'run',
                     'key' => $this->module->getSettingCronKey(),
-                ]),
+                ])),
                 'data' => route(self::ROUTE_PREFIX, [
                     'action' => 'data',
                 ]),

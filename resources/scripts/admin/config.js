@@ -34,7 +34,7 @@ $(document).ready(function() {
         bind_to: $('#reminder-admin-config-cron-input'),
         bind_method: {
             set: function($element, value) {
-                $element.val(value + ' wget -O - -q ' + path);
+                $element.val(`${value} wget -O - -q "${path}"`);
             }
         },
         no_reset_button: false,
