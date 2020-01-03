@@ -76,7 +76,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public function description(): string
     {
-        return 'TODO';
+        return 'Daily e-mail & Slack digest with list of the anniversaries.';
     }
 
     public function customModuleAuthorName(): string
