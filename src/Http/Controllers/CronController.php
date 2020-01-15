@@ -24,10 +24,6 @@ class CronController implements RequestHandlerInterface
 {
     public const ROUTE_PREFIX = 'reminder-cron';
 
-    public const SETTING_REMINDER_EMAIL = 'REMINDER_EMAIL_ENABLED';
-
-    public const SETTING_REMINDER_SLACK = 'REMINDER_SLACK_ENABLED';
-
     protected $module;
 
     /** @var \Fisharebest\Webtrees\Services\TreeService */
@@ -76,7 +72,7 @@ class CronController implements RequestHandlerInterface
         $this->users->all()->each(function(User $user) {
             $reminders = [];
 
-            if (!filter_var($user->getPreference(ReminderModule::SETTING_EMAIL_NAME), FILTER_VALIDATE_BOOLEAN)) {
+            if (filter_var($user->getPreference(ReminderModule::SETTING_EMAIL_NAME, 'false'), FILTER_VALIDATE_BOOLEAN)) {
                 $reminders[] = 'email';
             }
 
@@ -112,7 +108,7 @@ class CronController implements RequestHandlerInterface
 
     private function sendFacts(Tree $tree, User $user, Collection $facts, array $reminders): void
     {
-        if (!empty($reminders['email'])) {
+        if (in_array('email', $reminders, true)) {
             $this->sendEmail($tree, $user, $facts);
         }
     }
@@ -129,7 +125,7 @@ class CronController implements RequestHandlerInterface
         ]);
 
         $this->email->send(
-            $author,
+            $author, //TODO: Maybe use Site::getPreference('SMTP_FROM_NAME');
             $user,
             $author,
             $subject,
