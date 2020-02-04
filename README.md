@@ -16,3 +16,6 @@ Tested with 2.0 version.
 1. Rename the folder to `reminder`.
 1. [Config cron task](https://www.google.ru/search?ie=UTF-8&hl=ru&q=how%20to%20config%20cron%20task&gws_rd=ssl) for execute module action url.
 You can find this url on module config page.
+
+## Todo
+* Make notification config per tree
