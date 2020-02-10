@@ -7,6 +7,7 @@ use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Carbon;
 use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Fact;
+use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\CalendarService;
 use Fisharebest\Webtrees\Services\EmailService;
 use Fisharebest\Webtrees\Services\TreeService;
@@ -81,6 +82,7 @@ class CronController implements RequestHandlerInterface
             }
 
             Auth::login($user);
+            I18N::init($user->getPreference(User::PREF_LANGUAGE, 'en'));
             $this->trees->all()->each(function(Tree $tree) use ($user, $reminders) {
                 $facts = $this->events->getEventsList(
                     Carbon::now()->julianDay(),
@@ -117,7 +119,7 @@ class CronController implements RequestHandlerInterface
     {
         $author = $this->users->find((int)$tree->getPreference('CONTACT_USER_ID')) ?: new SiteUser();
 
-        $subject = "Upcoming events in \"{$tree->title()}\"";
+        $subject = "{$tree->title()}: ". I18N::translate('Upcoming events');
 
         $html = view("{$this->module->name()}::email/facts", [
             'subject' => $subject,
