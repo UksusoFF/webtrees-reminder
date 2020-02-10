@@ -96,7 +96,7 @@ class CronController implements RequestHandlerInterface
                     $tree
                 );
 
-                if (!empty($facts)) {
+                if ((is_array($facts) && !empty($facts)) || $facts->isNotEmpty()) {
                     $this->sendFacts($tree, $user, collect($facts), $reminders);
                 }
             });
