@@ -140,13 +140,15 @@ class CronController implements RequestHandlerInterface
     {
         return $facts
             ->sortBy(static function(Fact $fact) {
-                $date = strip_tags($fact->date()->display(false, '%m %d'));
+                $month = strip_tags($fact->date()->display(false, '%m'));
+                $day = strip_tags($fact->date()->display(false, '%d'));
+                $day = !empty($day) ? $day : '01';
 
-                $year = Carbon::createFromFormat('m d', $date)->isPast()
+                $year = Carbon::createFromFormat('m d', "{$month} {$day}")->isPast()
                     ? Carbon::now()->addYear()->format('Y')
                     : Carbon::now()->format('Y');
 
-                return $year . $date;
+                return $year . $month . $day;
             })->groupBy(static function(Fact $fact) {
                 return strip_tags($fact->date()->display(false, '%j %F'));
             });
