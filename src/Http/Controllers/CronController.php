@@ -5,6 +5,7 @@ namespace UksusoFF\WebtreesModules\Reminder\Http\Controllers;
 use Exception;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Carbon;
+use Fisharebest\Webtrees\Exceptions\HttpAccessDeniedException;
 use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Fact;
 use Fisharebest\Webtrees\I18N;
@@ -70,6 +71,10 @@ class CronController implements RequestHandlerInterface
 
     private function run(Request $request): Response
     {
+        if ($request->getQueryParams()['key'] !== $this->module->getSettingCronKey()) {
+            throw new HttpAccessDeniedException();
+        }
+
         $this->users->all()->each(function(User $user) {
             $reminders = [];
 
