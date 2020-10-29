@@ -2,24 +2,35 @@
 
 namespace UksusoFF\WebtreesModules\Reminder\Modules;
 
+use Aura\Router\Route;
 use Aura\Router\RouterContainer;
 use Fig\Http\Message\RequestMethodInterface;
 use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
+use Fisharebest\Webtrees\Http\RequestHandlers\AccountUpdate;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
 use Fisharebest\Webtrees\Module\ModuleConfigTrait;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
+use Fisharebest\Webtrees\Module\ModuleGlobalInterface;
+use Fisharebest\Webtrees\Module\ModuleGlobalTrait;
 use Fisharebest\Webtrees\Services\UserService;
+use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\User;
 use Fisharebest\Webtrees\View;
 use Illuminate\Support\Str;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use UksusoFF\WebtreesModules\Reminder\Helpers\DatabaseHelper;
 use UksusoFF\WebtreesModules\Reminder\Http\Controllers\AdminController;
 use UksusoFF\WebtreesModules\Reminder\Http\Controllers\CronController;
 
-class ReminderModule extends AbstractModule implements ModuleCustomInterface, ModuleConfigInterface
+class ReminderModule extends AbstractModule implements ModuleCustomInterface, ModuleGlobalInterface, ModuleConfigInterface, MiddlewareInterface
 {
     use ModuleCustomTrait;
+    use ModuleGlobalTrait;
     use ModuleConfigTrait;
 
     public const CUSTOM_VERSION = '2.0.4';
@@ -69,6 +80,24 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
             ->allows(RequestMethodInterface::METHOD_POST);
     }
 
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $route = $request->getAttribute('route');
+
+        if (!empty($route) && $route instanceof Route && $route->name === AccountUpdate::class) {
+            $user = $request->getAttribute('user');
+            assert($user instanceof User);
+
+            $this->setSettingUserReminder(
+                $user->id(),
+                self::SETTING_EMAIL_NAME,
+                $params = (($request->getParsedBody()['reminder-email'] ?? '0') === '1')
+            );
+        }
+
+        return $handler->handle($request);
+    }
+
     public function title(): string
     {
         return 'Reminder';
@@ -99,6 +128,29 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
         return __DIR__ . '/../../resources/';
     }
 
+    public function bodyContent(): string
+    {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
+        $request = app(ServerRequestInterface::class);
+
+        $tree = $request->getAttribute('tree');
+
+        $user = $request->getAttribute('user');
+        assert($user instanceof User);
+
+        return $tree instanceof Tree
+            ? view("{$this->name()}::script", [
+                'module' => $this->name(),
+                'settings' => [
+                    'email' => $this->getSettingUserReminder($user->id(), self::SETTING_EMAIL_NAME),
+                ],
+                'scripts' => [
+                    $this->assetUrl('build/module.min.js'),
+                ],
+            ])
+            : '';
+    }
+
     public function getSettingCronKey(): string
     {
         $key = $this->getPreference(self::SETTING_CRON_KEY_NAME);
@@ -111,7 +163,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
         return $key;
     }
 
-    public function getSettingUserReminder(int $id, string $type): string
+    public function getSettingUserReminder(int $id, string $type): bool
     {
         $user = $this->users->find($id);
 
@@ -119,7 +171,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
             throw new HttpNotFoundException();
         }
 
-        return $user->getPreference($type);
+        return filter_var($user->getPreference($type), FILTER_VALIDATE_BOOLEAN);
     }
 
     public function setSettingUserReminder(int $id, string $type, string $value): string

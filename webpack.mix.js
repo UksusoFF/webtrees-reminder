@@ -12,5 +12,9 @@ mix.scripts([
 ], 'resources/build/vendor.min.js');
 
 mix.babel([
+    'resources/scripts/module.js',
+], 'resources/build/module.min.js');
+
+mix.babel([
     'resources/scripts/admin/config.js',
 ], 'resources/build/admin.min.js');

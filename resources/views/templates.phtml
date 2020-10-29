@@ -1,0 +1,31 @@
+<?php
+
+use Fisharebest\Webtrees\I18N;
+
+?>
+<script type="javascript/template" id="reminder-account-settings-template">
+
+    <fieldset class="form-group">
+        <div class="row">
+            <div class="col-sm-3 col-form-label wt-page-options-label">
+                <a href="https://github.com/UksusoFF/webtrees-reminder" target="_blank">
+                    <i class="fas fa-puzzle-piece fa-fw" aria-hidden="true"></i>
+                </a>
+                Reminder
+            </div>
+            <div class="col-sm-9 wt-page-options-value">
+                <div class="form-check">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           name="reminder-email"
+                           id="reminder-email"
+                           value="1" <?php print (($settings['email']) ? 'checked' : ''); ?>
+                    <label class="form-check-label" for="reminder-email">E-mail</label>
+                </div>
+                <p class="small text-muted">
+                    <?= I18N::translate('Send message with list of the anniversaries that occur today.') ?>
+                </p>
+            </div>
+        </div>
+    </fieldset>
+</script>

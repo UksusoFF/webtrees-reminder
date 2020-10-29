@@ -95,7 +95,7 @@ class AdminController extends AbstractAdminController implements RequestHandlerI
                             'type' => 'email',
                             'id' => $row->user_id,
                         ]),
-                        'checked' => filter_var($this->module->getSettingUserReminder($row->user_id, ReminderModule::SETTING_EMAIL_NAME), FILTER_VALIDATE_BOOLEAN),
+                        'checked' => $this->module->getSettingUserReminder($row->user_id, ReminderModule::SETTING_EMAIL_NAME),
                     ]) /* TODO: Not implemented . view($this->module->name() . '::admin/parts/reminder_slack', [
                         'id' => $row->user_id,
                         'url' => '#',

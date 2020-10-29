@@ -1,0 +1,5 @@
+<?= view("{$module}::templates", [ 'settings' => $settings, ]) ?>
+
+<?php foreach ($scripts as $path) : ?>
+    <script type="text/javascript" src="<?= $path ?>"></script>
+<?php endforeach ?>
