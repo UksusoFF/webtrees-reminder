@@ -15,11 +15,12 @@ use Fisharebest\Webtrees\I18N;
             </div>
             <div class="col-sm-9 wt-page-options-value">
                 <div class="form-check">
-                    <input type="checkbox"
+                    <input <?php print (($settings['email']) ? 'checked' : ''); ?>
+                           type="checkbox"
                            class="form-check-input"
                            name="reminder-email"
                            id="reminder-email"
-                           value="1" <?php print (($settings['email']) ? 'checked' : ''); ?>
+                           value="1" >
                     <label class="form-check-label" for="reminder-email">E-mail</label>
                 </div>
                 <p class="small text-muted">
