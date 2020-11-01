@@ -33,7 +33,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleGlobalTrait;
     use ModuleConfigTrait;
 
-    public const CUSTOM_VERSION = '2.0.4';
+    public const CUSTOM_VERSION = '2.0.5';
 
     public const CUSTOM_WEBSITE = 'https://github.com/UksusoFF/webtrees-reminder';
 
@@ -134,15 +134,15 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
         $request = app(ServerRequestInterface::class);
 
         $tree = $request->getAttribute('tree');
-
         $user = $request->getAttribute('user');
-        assert($user instanceof User);
 
         return $tree instanceof Tree
             ? view("{$this->name()}::script", [
                 'module' => $this->name(),
                 'settings' => [
-                    'email' => $this->getSettingUserReminder($user->id(), self::SETTING_EMAIL_NAME),
+                    'email' => $user instanceof User
+                        ? $this->getSettingUserReminder($user->id(), self::SETTING_EMAIL_NAME)
+                        : false,
                 ],
                 'scripts' => [
                     $this->assetUrl('build/module.min.js'),
