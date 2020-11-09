@@ -18,7 +18,9 @@ class DatabaseHelper
                     'real_name',
                     'email',
                 ]),
-            DB::table('user')->count(),
+            DB::table('user')
+                ->where('user_id', '>', 0)
+                ->count(),
         ];
     }
 }
