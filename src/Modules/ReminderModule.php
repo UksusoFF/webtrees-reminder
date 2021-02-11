@@ -91,7 +91,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
             $this->setSettingUserReminder(
                 $user->id(),
                 self::SETTING_EMAIL_NAME,
-                $params = (($request->getParsedBody()['reminder-email'] ?? '0') === '1')
+                (string)(($request->getParsedBody()['reminder-email'] ?? '0') === '1')
             );
         }
 

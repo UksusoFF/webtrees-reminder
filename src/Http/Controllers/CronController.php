@@ -91,6 +91,7 @@ class CronController implements RequestHandlerInterface
             I18N::init($user->getPreference(User::PREF_LANGUAGE, 'en'));
 
             $this->trees->all()->each(function(Tree $tree) use ($user, $reminders) {
+                /** @var \Illuminate\Support\Collection<Fact>|array $facts */
                 $facts = $this->events->getEventsList(
                     Carbon::now()->julianDay(),
                     Carbon::now()->julianDay(),
