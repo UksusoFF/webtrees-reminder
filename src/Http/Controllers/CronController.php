@@ -132,12 +132,17 @@ class CronController implements RequestHandlerInterface
             'items' => $this->groupFacts($facts),
         ]);
 
+        $plain = str_replace(PHP_EOL, ' ', $html);
+        $plain = preg_replace('/[[:blank:]]+/', ' ', $plain);
+        $plain = str_replace(['<br/>', '<hr>'], [PHP_EOL, '----'], $plain);
+        $plain = strip_tags($plain);
+
         $this->email->send(
             new SiteUser(),
             $user,
             new NoReplyUser(),
             $subject,
-            strip_tags($html),
+            $plain,
             $html
         );
     }
