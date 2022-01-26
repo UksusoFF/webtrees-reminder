@@ -8,6 +8,8 @@ use Fisharebest\Webtrees\Carbon;
 use Fisharebest\Webtrees\Exceptions\HttpAccessDeniedException;
 use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Fact;
+use Fisharebest\Webtrees\Family;
+use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\NoReplyUser;
 use Fisharebest\Webtrees\Services\CalendarService;
@@ -104,8 +106,24 @@ class CronController implements RequestHandlerInterface
                     $tree
                 );
 
-                if ((is_array($facts) && !empty($facts)) || $facts->isNotEmpty()) {
+                if ((is_array($facts) && !empty($facts))) {
                     $this->sendFacts($tree, $user, collect($facts), $reminders);
+                }
+
+                if ($facts instanceof Collection) {
+                    $facts = $facts->filter(static function(Fact $fact) {
+                        $record = $fact->record();
+
+                        if ($record instanceof Family) {
+                            return $record->facts(Gedcom::DIVORCE_EVENTS)->isEmpty();
+                        }
+
+                        return true;
+                    });
+
+                    if ($facts->isNotEmpty()) {
+                        $this->sendFacts($tree, $user, $facts, $reminders);
+                    }
                 }
             });
             Auth::logout();
@@ -160,7 +178,8 @@ class CronController implements RequestHandlerInterface
                     : Carbon::now()->format('Y');
 
                 return $year . $month . $day;
-            })->groupBy(static function(Fact $fact) {
+            })
+            ->groupBy(static function(Fact $fact) {
                 return strip_tags($fact->date()->display(false, '%j %F'));
             });
     }
