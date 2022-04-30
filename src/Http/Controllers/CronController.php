@@ -4,14 +4,14 @@ namespace UksusoFF\WebtreesModules\Reminder\Http\Controllers;
 
 use Exception;
 use Fisharebest\Webtrees\Auth;
-use Fisharebest\Webtrees\Carbon;
-use Fisharebest\Webtrees\Exceptions\HttpAccessDeniedException;
-use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Fact;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\Gedcom;
+use Fisharebest\Webtrees\Http\Exceptions\HttpAccessDeniedException;
+use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\NoReplyUser;
+use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\CalendarService;
 use Fisharebest\Webtrees\Services\EmailService;
 use Fisharebest\Webtrees\Services\TreeService;
@@ -19,6 +19,7 @@ use Fisharebest\Webtrees\Services\UserService;
 use Fisharebest\Webtrees\SiteUser;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -29,19 +30,15 @@ class CronController implements RequestHandlerInterface
 {
     public const ROUTE_PREFIX = 'reminder-cron';
 
-    protected $module;
+    protected ReminderModule $module;
 
-    /** @var \Fisharebest\Webtrees\Services\TreeService */
-    protected $trees;
+    protected TreeService $trees;
 
-    /** @var \Fisharebest\Webtrees\Services\CalendarService */
-    protected $events;
+    protected CalendarService $events;
 
-    /** @var \Fisharebest\Webtrees\Services\UserService */
-    protected $users;
+    protected UserService $users;
 
-    /** @var \Fisharebest\Webtrees\Services\EmailService */
-    protected $email;
+    protected EmailService $email;
 
     public function __construct(ReminderModule $module)
     {
@@ -92,11 +89,13 @@ class CronController implements RequestHandlerInterface
             Auth::login($user);
             I18N::init($user->getPreference(User::PREF_LANGUAGE, 'en'));
 
-            $this->trees->all()->each(function(Tree $tree) use ($user, $reminders) {
-                /** @var \Illuminate\Support\Collection<Fact>|array $facts */
+            $startJd = Registry::timestampFactory()->now()->julianDay();
+            $endJd   = Registry::timestampFactory()->now()->julianDay();
+
+            $this->trees->all()->each(function(Tree $tree) use ($user, $reminders, $startJd, $endJd) {
                 $facts = $this->events->getEventsList(
-                    Carbon::now()->julianDay(),
-                    Carbon::now()->julianDay(),
+                    $startJd,
+                    $endJd,
                     implode(',', [
                         'BIRT',
                         'MARR',
@@ -104,26 +103,18 @@ class CronController implements RequestHandlerInterface
                     true,
                     'alpha',
                     $tree
-                );
+                )->filter(static function(Fact $fact) {
+                    $record = $fact->record();
 
-                if ((is_array($facts) && !empty($facts))) {
-                    $this->sendFacts($tree, $user, collect($facts), $reminders);
-                }
-
-                if ($facts instanceof Collection) {
-                    $facts = $facts->filter(static function(Fact $fact) {
-                        $record = $fact->record();
-
-                        if ($record instanceof Family) {
-                            return $record->facts(Gedcom::DIVORCE_EVENTS)->isEmpty();
-                        }
-
-                        return true;
-                    });
-
-                    if ($facts->isNotEmpty()) {
-                        $this->sendFacts($tree, $user, $facts, $reminders);
+                    if ($record instanceof Family) {
+                        return $record->facts(Gedcom::DIVORCE_EVENTS)->isEmpty();
                     }
+
+                    return true;
+                });
+
+                if ($facts->isNotEmpty()) {
+                    $this->sendFacts($tree, $user, $facts, $reminders);
                 }
             });
             Auth::logout();
@@ -169,8 +160,8 @@ class CronController implements RequestHandlerInterface
     {
         return $facts
             ->sortBy(static function(Fact $fact) {
-                $month = strip_tags($fact->date()->display(false, '%m'));
-                $day = strip_tags($fact->date()->display(false, '%d'));
+                $month = strip_tags($fact->date()->display(null, '%m'));
+                $day = strip_tags($fact->date()->display(null, '%d'));
                 $day = !empty($day) ? $day : '01';
 
                 $year = Carbon::createFromFormat('m d', "{$month} {$day}")->isPast()
@@ -180,7 +171,7 @@ class CronController implements RequestHandlerInterface
                 return $year . $month . $day;
             })
             ->groupBy(static function(Fact $fact) {
-                return strip_tags($fact->date()->display(false, '%j %F'));
+                return strip_tags($fact->date()->display(null, '%j %F'));
             });
     }
 }

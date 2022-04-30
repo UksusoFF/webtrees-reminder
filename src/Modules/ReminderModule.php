@@ -5,7 +5,7 @@ namespace UksusoFF\WebtreesModules\Reminder\Modules;
 use Aura\Router\Route;
 use Aura\Router\RouterContainer;
 use Fig\Http\Message\RequestMethodInterface;
-use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
+use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Http\RequestHandlers\AccountUpdate;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
@@ -33,7 +33,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleGlobalTrait;
     use ModuleConfigTrait;
 
-    public const CUSTOM_VERSION = '2.0.6';
+    public const CUSTOM_VERSION = '2.1.0';
 
     public const CUSTOM_WEBSITE = 'https://github.com/UksusoFF/webtrees-reminder';
 
@@ -43,10 +43,9 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public const SETTING_SLACK_NAME = 'REMINDER_SLACK';
 
-    public $query;
+    public DatabaseHelper $query;
 
-    /** @var \Fisharebest\Webtrees\Services\UserService */
-    public $users;
+    public UserService $users;
 
     public function __construct()
     {

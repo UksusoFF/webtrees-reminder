@@ -3,8 +3,8 @@
 namespace UksusoFF\WebtreesModules\Reminder\Http\Controllers;
 
 use Fisharebest\Webtrees\Auth;
-use Fisharebest\Webtrees\Exceptions\HttpAccessDeniedException;
-use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
+use Fisharebest\Webtrees\Http\Exceptions\HttpAccessDeniedException;
+use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\I18N;
@@ -20,7 +20,7 @@ class AdminController implements RequestHandlerInterface
 
     public const ROUTE_PREFIX = 'reminder-admin';
 
-    protected $module;
+    protected ReminderModule $module;
 
     public function __construct(ReminderModule $module)
     {
@@ -29,6 +29,8 @@ class AdminController implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): Response
     {
+        $this->layout = 'layouts/administration';
+
         if (!Auth::isAdmin()) {
             throw new HttpAccessDeniedException();
         }
