@@ -33,7 +33,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleGlobalTrait;
     use ModuleConfigTrait;
 
-    public const CUSTOM_VERSION = '2.0.5';
+    public const CUSTOM_VERSION = '2.0.6';
 
     public const CUSTOM_WEBSITE = 'https://github.com/UksusoFF/webtrees-reminder';
 
