@@ -7,8 +7,8 @@ mix.sass('resources/styles/admin/config.scss', 'resources/build/admin.min.css').
 });
 
 mix.scripts([
-    'node_modules/jqcron/src/jqCron.js',
-    'node_modules/jqcron/src/jqCron.en.js',
+    'resources/scripts/jqCron.js',
+    'resources/scripts/jqCron.en.js',
 ], 'resources/build/vendor.min.js');
 
 mix.babel([
