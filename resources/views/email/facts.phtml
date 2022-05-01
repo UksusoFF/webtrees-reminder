@@ -14,7 +14,7 @@
         <?= $fact->label() ?>:
         <a href="<?= e($record->url()) ?>"><?= $record->fullName() ?></a>
 
-        <?php $year = $fact->date()->display(false, '%Y'); ?>
+        <?php $year = $fact->date()->display(null, '%Y'); ?>
         <?php if (!empty($year)) : ?>
             (<?= $year ?> / <?= $fact->anniv ?>)
         <?php endif ?>
