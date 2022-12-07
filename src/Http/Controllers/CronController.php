@@ -75,7 +75,9 @@ class CronController implements RequestHandlerInterface
             throw new HttpAccessDeniedException();
         }
 
-        $this->users->all()->each(function(User $user) {
+        $counter = 0;
+
+        $this->users->all()->each(function(User $user) use (&$counter) {
             $reminders = [];
 
             if (filter_var($user->getPreference(ReminderModule::SETTING_EMAIL_NAME, 'false'), FILTER_VALIDATE_BOOLEAN)) {
@@ -92,7 +94,7 @@ class CronController implements RequestHandlerInterface
             $startJd = Registry::timestampFactory()->now()->julianDay();
             $endJd   = Registry::timestampFactory()->now()->julianDay();
 
-            $this->trees->all()->each(function(Tree $tree) use ($user, $reminders, $startJd, $endJd) {
+            $this->trees->all()->each(function(Tree $tree) use ($user, $reminders, $startJd, $endJd, &$counter) {
                 $facts = $this->events->getEventsList(
                     $startJd,
                     $endJd,
@@ -115,6 +117,7 @@ class CronController implements RequestHandlerInterface
 
                 if ($facts->isNotEmpty()) {
                     $this->sendFacts($tree, $user, $facts, $reminders);
+                    $counter++;
                 }
             });
             Auth::logout();
@@ -122,6 +125,7 @@ class CronController implements RequestHandlerInterface
 
         return response([
             'success' => true,
+            'count' => $counter,
         ]);
     }
 
