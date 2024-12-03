@@ -7,7 +7,7 @@ This module send message with list of the anniversaries that occur today.
 ## System requirements
 Same as [webtrees#system-requirements](https://github.com/fisharebest/webtrees#system-requirements) and cron.
 
-Tested with 2.1.1 version.
+Works with 2.1.x and 2.2.x version.
 
 ## Installation
 1. Download the [latest release](https://github.com/UksusoFF/webtrees-reminder/releases/latest)

@@ -24,6 +24,7 @@ use Illuminate\Support\Collection;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
+use UksusoFF\WebtreesModules\Reminder\Helpers\AppHelper;
 use UksusoFF\WebtreesModules\Reminder\Modules\ReminderModule;
 
 class CronController implements RequestHandlerInterface
@@ -44,10 +45,10 @@ class CronController implements RequestHandlerInterface
     {
         $this->module = $module;
 
-        $this->trees = app(TreeService::class);
-        $this->events = app(CalendarService::class);
-        $this->users = app(UserService::class);
-        $this->email = app(EmailService::class);
+        $this->trees = AppHelper::get(TreeService::class);
+        $this->events = AppHelper::get(CalendarService::class);
+        $this->users = AppHelper::get(UserService::class);
+        $this->email = AppHelper::get(EmailService::class);
     }
 
     public function handle(Request $request): Response
@@ -92,7 +93,7 @@ class CronController implements RequestHandlerInterface
             I18N::init($user->getPreference(User::PREF_LANGUAGE, 'en'));
 
             $startJd = Registry::timestampFactory()->now()->julianDay();
-            $endJd   = Registry::timestampFactory()->now()->julianDay();
+            $endJd = Registry::timestampFactory()->now()->julianDay();
 
             $this->trees->all()->each(function(Tree $tree) use ($user, $reminders, $startJd, $endJd, &$counter) {
                 $facts = $this->events->getEventsList(

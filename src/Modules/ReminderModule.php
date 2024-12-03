@@ -23,6 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use UksusoFF\WebtreesModules\Reminder\Helpers\AppHelper;
 use UksusoFF\WebtreesModules\Reminder\Helpers\DatabaseHelper;
 use UksusoFF\WebtreesModules\Reminder\Http\Controllers\AdminController;
 use UksusoFF\WebtreesModules\Reminder\Http\Controllers\CronController;
@@ -33,7 +34,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleGlobalTrait;
     use ModuleConfigTrait;
 
-    public const CUSTOM_VERSION = '2.1.1';
+    public const CUSTOM_VERSION = '2.1.2';
 
     public const CUSTOM_WEBSITE = 'https://github.com/UksusoFF/webtrees-reminder';
 
@@ -50,14 +51,14 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
     public function __construct()
     {
         $this->query = new DatabaseHelper();
-        $this->users = app(UserService::class);
+        $this->users = AppHelper::get(UserService::class);
     }
 
     public function boot(): void
     {
         View::registerNamespace($this->name(), $this->resourcesFolder() . 'views/');
 
-        $router = app(RouterContainer::class);
+        $router = AppHelper::get(RouterContainer::class);
         assert($router instanceof RouterContainer);
 
         $map = $router->getMap();
@@ -90,7 +91,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
             $this->setSettingUserReminder(
                 $user->id(),
                 self::SETTING_EMAIL_NAME,
-                (string)(($request->getParsedBody()['reminder-email'] ?? '0') === '1')
+                (string) (($request->getParsedBody()['reminder-email'] ?? '0') === '1')
             );
         }
 
@@ -138,8 +139,8 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public function bodyContent(): string
     {
-        /** @var \Psr\Http\Message\ServerRequestInterface $request */
-        $request = app(ServerRequestInterface::class);
+        $request = AppHelper::get(ServerRequestInterface::class);
+        assert($request instanceof ServerRequestInterface);
 
         $tree = $request->getAttribute('tree');
         $user = $request->getAttribute('user');

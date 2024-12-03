@@ -115,9 +115,9 @@ class AdminController implements RequestHandlerInterface
         switch ($request->getQueryParams()['type']) {
             case 'email':
                 $this->module->setSettingUserReminder(
-                    (int)$request->getQueryParams()['id'],
+                    (int) $request->getQueryParams()['id'],
                     ReminderModule::SETTING_EMAIL_NAME,
-                    (string)$request->getQueryParams()['value']
+                    (string) $request->getQueryParams()['value']
                 );
 
                 return response([
