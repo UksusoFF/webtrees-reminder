@@ -7,6 +7,7 @@ use Aura\Router\RouterContainer;
 use Fig\Http\Message\RequestMethodInterface;
 use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Http\RequestHandlers\AccountUpdate;
+use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
 use Fisharebest\Webtrees\Module\ModuleConfigTrait;
@@ -102,7 +103,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public function title(): string
     {
-        return 'Reminder';
+        return I18N::translate('Reminder');
     }
 
     public function description(): string

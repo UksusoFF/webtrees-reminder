@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'Reminder' => 'Reminder',
     'Send message with list of the anniversaries that occur today' => 'Send message with list of the anniversaries that occur today',
     'Module require configured Cron entry for work' => 'Module require configured Cron entry for work',
     'You only need to add the following Cron entry to your server' => 'You only need to add the following Cron entry to your server',
