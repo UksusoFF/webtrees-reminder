@@ -44,8 +44,6 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public const SETTING_EMAIL_NAME = 'REMINDER_EMAIL';
 
-    public const SETTING_SLACK_NAME = 'REMINDER_SLACK';
-
     public const SETTING_EMPTY_VALUE = 'SETTING_EMPTY_VALUE';
 
     public DatabaseHelper $query;
@@ -109,7 +107,7 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public function description(): string
     {
-        return 'Daily e-mail & Slack digest with list of the anniversaries.';
+        return 'Daily e-mail digest with list of the anniversaries.';
     }
 
     public function customModuleAuthorName(): string

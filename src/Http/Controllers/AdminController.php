@@ -108,11 +108,7 @@ class AdminController implements RequestHandlerInterface
                             'id' => $row->user_id,
                         ]),
                         'checked' => $this->module->getSettingUserReminder($row->user_id, ReminderModule::SETTING_EMAIL_NAME),
-                    ]) /* TODO: Not implemented . view($this->module->name() . '::admin/parts/reminder_slack', [
-                        'id' => $row->user_id,
-                        'url' => '#',
-                        'checked' => true,
-                    ])*/,
+                    ]),
                 ];
             }),
         ]);
