@@ -1,19 +1,11 @@
 $(document).ready(function() {
-    var $page = $('#reminder-admin-config'),
-        $table = $page.find('#reminder-admin-config-table');
+    var $page = $('#reminder-admin-config');
+
+    if ($page.length === 0) {
+        return
+    }
 
     var path = window.WT_REMINDER.routes.cron;
-
-    $page.find('[data-target="#reminder-admin-config-cron-content"]').on('click', function() {
-        //TODO: Save state.
-        var $this = $(this);
-
-        if ($($this.data('target')).hasClass('show')) {
-            $this.text('Show');
-        } else {
-            $this.text('Done');
-        }
-    });
 
     $('#reminder-admin-config-cron-text').jqCron({
         numeric_zero_pad: true,
@@ -40,6 +32,8 @@ $(document).ready(function() {
         no_reset_button: false,
         lang: 'en'
     });
+
+    var $table = $page.find('#reminder-admin-config-table');
 
     $table.dataTable({
         processing: true,
