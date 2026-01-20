@@ -3,6 +3,7 @@
 namespace UksusoFF\WebtreesModules\Reminder\Http\Controllers;
 
 use Fisharebest\Webtrees\Auth;
+use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Http\Exceptions\HttpAccessDeniedException;
 use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
@@ -12,6 +13,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
+use UksusoFF\WebtreesModules\Reminder\Helpers\EventTypeHelper;
 use UksusoFF\WebtreesModules\Reminder\Modules\ReminderModule;
 
 class AdminController implements RequestHandlerInterface
@@ -65,7 +67,13 @@ class AdminController implements RequestHandlerInterface
                 'data' => route(self::ROUTE_PREFIX, [
                     'action' => 'data',
                 ]),
+                'events' => route(self::ROUTE_PREFIX, [
+                    'action' => 'update',
+                    'type' => 'events',
+                ]),
             ],
+            'eventsSelected' => $this->module->getSettingEventTypes() ?: EventTypeHelper::getDefaultEvents(),
+            'eventsOptions' => EventTypeHelper::getEventOptions(),
             'styles' => [
                 $this->module->assetUrl('build/admin.min.css'),
             ],
@@ -94,7 +102,7 @@ class AdminController implements RequestHandlerInterface
                     $row->email,
                     view($this->module->name() . '::admin/parts/reminder_email', [
                         'id' => $row->user_id,
-                        'url' => route(AdminController::ROUTE_PREFIX, [
+                        'url' => route(self::ROUTE_PREFIX, [
                             'action' => 'update',
                             'type' => 'email',
                             'id' => $row->user_id,
@@ -123,6 +131,14 @@ class AdminController implements RequestHandlerInterface
                 return response([
                     'success' => true,
                 ]);
+            case 'events':
+                $this->module->setSettingEventTypes($request->getParsedBody()['events']);
+
+                FlashMessages::addMessage(I18N::translate('Reminder events config saved'));
+
+                return redirect(route(self::ROUTE_PREFIX, [
+                    'action' => 'config',
+                ]));
             default:
                 throw new HttpNotFoundException();
         }

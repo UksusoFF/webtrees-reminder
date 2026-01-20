@@ -25,6 +25,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use UksusoFF\WebtreesModules\Reminder\Helpers\AppHelper;
+use UksusoFF\WebtreesModules\Reminder\Helpers\EventTypeHelper;
 use UksusoFF\WebtreesModules\Reminder\Modules\ReminderModule;
 
 class CronController implements RequestHandlerInterface
@@ -99,10 +100,7 @@ class CronController implements RequestHandlerInterface
                 $facts = $this->events->getEventsList(
                     $startJd,
                     $endJd,
-                    implode(',', [
-                        'BIRT',
-                        'MARR',
-                    ]),
+                    implode(',', $this->module->getSettingEventTypes() ?: EventTypeHelper::getDefaultEvents()),
                     true,
                     'alpha',
                     $tree

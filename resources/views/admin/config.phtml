@@ -1,5 +1,6 @@
 <?php
 
+use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
 
 ?>
@@ -12,13 +13,11 @@ use Fisharebest\Webtrees\View;
 
     <div id="reminder-admin-config-content">
 
-        <h3>
-            Cron settings
-        </h3>
+        <h3><?= I18N::translate('Cron settings') ?></h3>
 
         <div>
-            <p>Module require configured Cron entry for work.</p>
-            <p>You only need to add the following Cron entry to your server:</p>
+            <p><?= I18N::translate('Module require configured Cron entry for work') ?>.</p>
+            <p><?= I18N::translate('You only need to add the following Cron entry to your server') ?>:</p>
 
             <div class="input-group mb-3">
                 <input type="text" class="form-control" id="reminder-admin-config-cron-input">
@@ -28,7 +27,35 @@ use Fisharebest\Webtrees\View;
             </div>
         </div>
 
-        <h3>User settings</h3>
+        <hr>
+
+        <h3><?= I18N::translate('Events settings') ?></h3>
+
+        <div>
+            <p><?= I18N::translate('Which type of events will be reminded') ?></p>
+
+            <form method="post" id="settings-form" action="<?= e($routes['events']) ?>">
+                <?= csrf_field() ?>
+
+                <div class="input-group">
+                    <?= view('components/select', [
+                        'name' => 'events[]',
+                        'id' => 'reminder-events',
+                        'selected' => $eventsSelected,
+                        'options' => $eventsOptions,
+                        'class' => 'tom-select',
+                        'multiple' => true,
+                    ]) ?>
+                    <button type="submit" class="btn btn-secondary">
+                        <?= I18N::translate('Save') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <hr>
+
+        <h3><?= I18N::translate('User settings') ?></h3>
 
         <table id="reminder-admin-config-table" class="table" data-url="<?= e($routes['data']) ?>">
             <thead>

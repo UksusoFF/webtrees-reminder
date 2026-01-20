@@ -40,9 +40,13 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
 
     public const SETTING_CRON_KEY_NAME = 'REMINDER_CRON_KEY';
 
+    public const SETTING_EVENTS_KEY_NAME = 'REMINDER_EVENTS_KEY_NAME';
+
     public const SETTING_EMAIL_NAME = 'REMINDER_EMAIL';
 
     public const SETTING_SLACK_NAME = 'REMINDER_SLACK';
+
+    public const SETTING_EMPTY_VALUE = 'SETTING_EMPTY_VALUE';
 
     public DatabaseHelper $query;
 
@@ -194,6 +198,18 @@ class ReminderModule extends AbstractModule implements ModuleCustomInterface, Mo
         $user->setPreference($type, $value);
 
         return $value;
+    }
+
+    public function getSettingEventTypes(): ?array
+    {
+        $data = $this->getPreference(self::SETTING_EVENTS_KEY_NAME, self::SETTING_EMPTY_VALUE);
+
+        return !empty($data) && $data !== self::SETTING_EMPTY_VALUE ? explode(',', $data) : null;
+    }
+
+    public function setSettingEventTypes(array $types): void
+    {
+        $this->setPreference(self::SETTING_EVENTS_KEY_NAME, implode(',', $types));
     }
 
     public function getConfigLink(): string
